@@ -51,6 +51,8 @@ outputs = FunctionSet()
 @inputs.register('archive.org', default=True)
 def input_archive_dot_org(source):
     """ Search archive.org for a query and return a list of results.
+
+    See https://archive.org/help/json.php for information on the API.
     """
     r = requests.get(ARCHIVE_ORG_SEARCH_URL, params={
         "q": source,
@@ -79,8 +81,8 @@ def transform_none(video, category, state):
 def transform_ao2pyv(video, category, state):
     """ Transform a video result from archive.org to pyvideo.org format.
 
-        See http://richard.readthedocs.org/en/latest/admin/api.html#videos for
-        a description of the pyvideo.org format.
+    See http://richard.readthedocs.org/en/latest/admin/api.html#videos for
+    a description of the pyvideo.org format.
     """
     return {
         "category": category,
