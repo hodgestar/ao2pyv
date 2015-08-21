@@ -32,6 +32,7 @@ class Transform(Processor):
 
 
 @click.group(chain=True, invoke_without_command=True)
+@click.version_option()
 @click.option('--query', '-q', help='Archive.org search query')
 @click.option('--category', '-c', help="Pyvideo category")
 @click.option('--language', '-l', help="Pyvideo language")
