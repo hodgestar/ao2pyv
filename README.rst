@@ -6,7 +6,7 @@ Converts Archive.org video searches into PyVideo.org API submissions.
 Installation
 ------------
 
-Just `pip install ao2pyv`.
+Just ``pip install ao2pyv``.
 
 Usage
 -----
