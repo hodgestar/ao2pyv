@@ -9,7 +9,7 @@ def read_file(filename):
 setup(
     name='ao2pyv',
     version='0.0.1a',
-    url='XXX',
+    url='https://github.com/hodgestar/ao2pyv',
     license='BSD',
     description=(
         'Converts Archive.org video searches into PyVideo.org API'
@@ -18,13 +18,17 @@ setup(
     long_description=read_file('README.rst'),
     author='Simon Cross',
     author_email='hodgestar@gmail.com',
-    modules=[
+    py_modules=[
         'ao2pyv',
     ],
     install_requires=[
         'requests',
         'click',
     ],
+    entry_points='''
+        [console_scripts]
+        ao2pyv=ao2pyv:cli
+    ''',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
