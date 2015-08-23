@@ -117,13 +117,49 @@ def transform_none():
     return Transform(lambda videos: videos)
 
 
+def _pyvideo_urls(ao_video, base_metadata_url, base_download_url):
+    """ Return a dictionary of pyvideo URLs for an archive.org video. """
+
+    AO2PYV_FORMATS = {
+        'ogv': 'Ogg Video',
+        'mp4': 'MPEG4',
+        'flv': None,
+        'webm': None,
+    }
+
+    def get_ao_metadata(identifier):
+        r = requests.get(base_metadata_url + identifier)
+        return r.json()
+
+    def format_download_url(identifier, name):
+        return "%s%s/%s" % (base_download_url, identifier, name)
+
+    def get_ao_formats(identifier, ao_metadata):
+        return dict((f['format'], format_download_url(identifier, f['name']))
+                    for f in ao_metadata['files'])
+
+    ao_meta = get_ao_metadata(ao_video["identifier"])
+    ao_formats = get_ao_formats(ao_video["identifier"], ao_meta)
+    py_video_urls = {
+        "thumbnail_url": ao_formats.get('Thumbnail', ''),
+    }
+    for pyv_name, ao_name in AO2PYV_FORMATS.items():
+        py_video_urls['video_%s_download_only' % pyv_name] = False
+        py_video_urls['video_%s_url' % pyv_name] = ao_formats.get(ao_name, '')
+    return py_video_urls
+
+
 @cli.command('transform.ao2pyv')
 @click.option('--category', '-c', help="Pyvideo category")
 @click.option('--draft', 'state', flag_value=2, default=True)
 @click.option('--live', 'state', flag_value=1)
 @click.option('--language', '-l', help="Pyvideo language")
+@click.option('--video-urls/--no-video-urls', default=True,
+              help="Whether to include URLs for videos")
 @click.option('--base-url', default='https://archive.org/details/')
-def transform_ao2pyv(category, state, language, base_url):
+@click.option('--base-metadata-url', default='https://archive.org/metadata/')
+@click.option('--base-download-url', default='https://archive.org/download/')
+def transform_ao2pyv(category, state, language, video_urls, base_url, **kw):
     """ Transform a video result from archive.org to pyvideo.org format.
 
     See http://richard.readthedocs.org/en/latest/admin/api.html#videos for
@@ -134,17 +170,25 @@ def transform_ao2pyv(category, state, language, base_url):
 
     def ao2pyv(videos):
         # TODO: truncate description to first paragraph
-        return [{
-            "category": category,
-            "title": video["title"],
-            "language": language or video["language"][0],
-            "state": state,
-            "speakers": video["creator"],
-            "tags": video["subject"],
-            "summary": video["description"],
-            "description": video["description"],
-            "source_url": base_url + video["identifier"],
-        } for video in videos]
+        py_videos = []
+        for ao_video in videos:
+            py_video = {
+                "category": category,
+                "title": ao_video["title"],
+                "language": language or ao_video["language"][0],
+                "state": state,
+                "speakers": ao_video["creator"],
+                "tags": ao_video["subject"],
+                "summary": ao_video["description"],
+                "description": ao_video["description"],
+                "source_url": base_url + ao_video["identifier"],
+                "copyright_text": ao_video["licenseurl"],
+                "recorded": ao_video["date"],
+            }
+            if video_urls:
+                py_video.update(_pyvideo_urls(ao_video, **kw))
+            py_videos.append(py_video)
+        return py_videos
     return Transform(ao2pyv)
 
 
