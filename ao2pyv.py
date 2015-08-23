@@ -177,7 +177,7 @@ def transform_ao2pyv(category, state, language, video_urls, base_url, **kw):
                 "title": ao_video["title"],
                 "language": language or ao_video["language"][0],
                 "state": state,
-                "speakers": ao_video["creator"],
+                "speakers": ao_video.get("creator", []),
                 "tags": ao_video["subject"],
                 "summary": ao_video["description"],
                 "description": ao_video["description"],
