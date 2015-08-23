@@ -8,7 +8,7 @@ def read_file(filename):
 
 setup(
     name='ao2pyv',
-    version='0.1.1',
+    version='0.1.2a',
     url='https://github.com/hodgestar/ao2pyv',
     license='BSD',
     description=(
