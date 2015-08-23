@@ -8,6 +8,29 @@ Installation
 
 Just ``pip install ao2pyv``.
 
+Examples
+--------
+
+The quick and easy way::
+
+    $ ao2pyv --query 'pyconza2014' \
+             --category 'PyCon ZA 2014' \
+             --language 'English'
+
+The explicit equivalent using a pipeline of commands::
+
+    $ ao2pyv \
+        source.archive-org --query 'pyconza2014' \
+        transform.ao2pyv --category 'PyCon ZA 2014' --language 'English' \
+        sink.json -f -
+
+Read the help for each of the commands in the pipeline::
+
+    $ ao2pyv --help
+    $ ao2pyv source.archive-org --help
+    $ ao2pyv transform.ao2pyv --help
+    $ ao2pyv sink.json --help
+
 Usage
 -----
 
